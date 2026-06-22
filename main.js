@@ -27,6 +27,14 @@
     a.addEventListener("click", (e) => {
       const id = a.getAttribute("href");
       if (id.length < 2) return;
+      // #top is the fixed header (always at viewport top), so scrolling to the
+      // element is a no-op — send the page to absolute 0 instead.
+      if (id === "#top") {
+        e.preventDefault();
+        if (lenis) lenis.scrollTo(0, { duration: 1.2 });
+        else window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      }
       const target = document.querySelector(id);
       if (!target) return;
       e.preventDefault();
@@ -87,46 +95,41 @@
     const trail = hero && hero.querySelector(".sand-trail");
     if (!trail) return;
 
-    const PIXEL = 30; // grid cell size (px)
-    const FADE = 1300; // grain lifetime (ms)
     const SAND = ["#cdb488", "#c2a06a", "#b8925a", "#d9c8a3", "#ad8850"];
-    const seen = new Set(); // cells with a live grain (one at a time)
+    const STEP = 8; // px between grains along the path — small = continuous & fluid
     let lastX = null, lastY = null;
 
-    function grain(x, y, key) {
+    // One soft grain dropped at (x, y), scattering and settling like disturbed sand.
+    function grain(x, y) {
       const el = document.createElement("span");
       el.className = "sand-cell";
-      const jitter = (Math.random() - 0.5) * 6;
+      const size = 14 + Math.random() * 22;
+      const sx = (Math.random() - 0.5) * 12; // scatter around the finger's path
+      const sy = (Math.random() - 0.5) * 12;
       el.style.cssText =
-        `left:${x + jitter}px;top:${y}px;width:${PIXEL}px;height:${PIXEL}px;` +
-        `background:${SAND[(Math.random() * SAND.length) | 0]};`;
+        `left:${x + sx - size / 2}px;top:${y + sy - size / 2}px;` +
+        `width:${size}px;height:${size}px;background:${SAND[(Math.random() * SAND.length) | 0]};`;
       trail.appendChild(el);
-      const drift = 6 + Math.random() * 10; // settle downward like falling sand
+      const dx = (Math.random() - 0.5) * 10;
+      const dy = 4 + Math.random() * 10; // drift down as it settles
       const anim = el.animate(
         [
-          { opacity: 0.9, transform: "translateY(0) scale(1)" },
-          { opacity: 0, transform: `translateY(${drift}px) scale(0.55)` },
+          { opacity: 0.85, transform: "translate(0,0) scale(1)" },
+          { opacity: 0, transform: `translate(${dx}px, ${dy}px) scale(0.35)` },
         ],
-        { duration: FADE, easing: "cubic-bezier(.4,0,.6,1)", fill: "forwards" }
+        { duration: 1000 + Math.random() * 600, easing: "cubic-bezier(.22,.61,.36,1)", fill: "forwards" }
       );
-      anim.onfinish = () => { el.remove(); seen.delete(key); };
+      anim.onfinish = () => el.remove();
     }
 
     hero.addEventListener("pointermove", (e) => {
       const r = hero.getBoundingClientRect();
       const x = e.clientX - r.left, y = e.clientY - r.top;
-      if (lastX === null) { lastX = x; lastY = y; }
-      // Interpolate across the cells the cursor crossed so fast moves stay continuous.
-      const dx = x - lastX, dy = y - lastY;
-      const steps = Math.min(Math.ceil(Math.hypot(dx, dy) / (PIXEL * 0.6)), 24) || 1;
-      for (let i = 1; i <= steps; i++) {
-        const gx = Math.floor((lastX + (dx * i) / steps) / PIXEL);
-        const gy = Math.floor((lastY + (dy * i) / steps) / PIXEL);
-        const key = gx + "," + gy;
-        if (seen.has(key)) continue;
-        seen.add(key);
-        grain(gx * PIXEL, gy * PIXEL, key);
-      }
+      if (lastX === null) { lastX = x; lastY = y; grain(x, y); return; }
+      // Lay a continuous run of grains along the exact path travelled this frame.
+      const dxp = x - lastX, dyp = y - lastY;
+      const n = Math.min(Math.max(1, Math.round(Math.hypot(dxp, dyp) / STEP)), 60);
+      for (let i = 1; i <= n; i++) grain(lastX + (dxp * i) / n, lastY + (dyp * i) / n);
       lastX = x; lastY = y;
     });
     hero.addEventListener("pointerleave", () => { lastX = lastY = null; });
@@ -173,9 +176,10 @@
   if (portrait) withFallback(portrait, portrait.getAttribute("data-fallback"));
 
   // Work: media on every project row.
-  //   data-video  -> autoplaying, muted, looping clip (one or more comma-separated sources)
-  //   data-img + data-img-hover -> still that cross-fades to a second image on hover
-  //   data-img only -> single still
+  //   data-video       -> autoplaying, muted, looping clip (one or more comma-separated sources)
+  //   data-img + data-img-hover   -> still that cross-fades to a second image on hover
+  //   data-img + data-video-hover -> still that cross-fades to a looping clip on hover
+  //   data-img only    -> single still
   function videoTypeFor(src) {
     const ext = src.split(".").pop().toLowerCase();
     return (
@@ -207,6 +211,33 @@
       hover.loading = "lazy";
       hover.src = hoverSrc;
       thumb.appendChild(hover);
+    }
+
+    // Looping clip that cross-fades in (and plays) only while hovered. Reuses
+    // the .work-thumb-hover opacity machinery; loads lazily (preload="none").
+    const hoverVideo = item.getAttribute("data-video-hover");
+    if (hoverVideo && !reduceMotion) {
+      const video = document.createElement("video");
+      video.className = "work-thumb-hover";
+      video.muted = true;
+      video.loop = true;
+      video.setAttribute("muted", "");
+      video.setAttribute("playsinline", "");
+      video.preload = "none";
+      hoverVideo.split(",").forEach((raw) => {
+        const src = raw.trim();
+        if (!src) return;
+        const source = document.createElement("source");
+        source.src = src;
+        source.type = videoTypeFor(src);
+        video.appendChild(source);
+      });
+      thumb.appendChild(video);
+      item.addEventListener("mouseenter", () => {
+        const p = video.play();
+        if (p && p.catch) p.catch(() => {});
+      });
+      item.addEventListener("mouseleave", () => video.pause());
     }
     return thumb;
   }
