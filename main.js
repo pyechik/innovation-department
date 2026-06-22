@@ -35,6 +35,61 @@
     });
   });
 
+  /* ---------- Hero "sand" cursor trail ----------
+     A pixel-trail effect (grid cells light up as the cursor passes) styled as
+     warm sand grains; an SVG gooey filter melts neighbours into flowing blobs.
+     Independent of GSAP; skipped for reduced-motion. */
+  (function sandTrail() {
+    if (reduceMotion) return;
+    const hero = document.querySelector(".hero");
+    const trail = hero && hero.querySelector(".sand-trail");
+    if (!trail) return;
+
+    const PIXEL = 30; // grid cell size (px)
+    const FADE = 1300; // grain lifetime (ms)
+    const SAND = ["#cdb488", "#c2a06a", "#b8925a", "#d9c8a3", "#ad8850"];
+    const seen = new Set(); // cells with a live grain (one at a time)
+    let lastX = null, lastY = null;
+
+    function grain(x, y, key) {
+      const el = document.createElement("span");
+      el.className = "sand-cell";
+      const jitter = (Math.random() - 0.5) * 6;
+      el.style.cssText =
+        `left:${x + jitter}px;top:${y}px;width:${PIXEL}px;height:${PIXEL}px;` +
+        `background:${SAND[(Math.random() * SAND.length) | 0]};`;
+      trail.appendChild(el);
+      const drift = 6 + Math.random() * 10; // settle downward like falling sand
+      const anim = el.animate(
+        [
+          { opacity: 0.9, transform: "translateY(0) scale(1)" },
+          { opacity: 0, transform: `translateY(${drift}px) scale(0.55)` },
+        ],
+        { duration: FADE, easing: "cubic-bezier(.4,0,.6,1)", fill: "forwards" }
+      );
+      anim.onfinish = () => { el.remove(); seen.delete(key); };
+    }
+
+    hero.addEventListener("pointermove", (e) => {
+      const r = hero.getBoundingClientRect();
+      const x = e.clientX - r.left, y = e.clientY - r.top;
+      if (lastX === null) { lastX = x; lastY = y; }
+      // Interpolate across the cells the cursor crossed so fast moves stay continuous.
+      const dx = x - lastX, dy = y - lastY;
+      const steps = Math.min(Math.ceil(Math.hypot(dx, dy) / (PIXEL * 0.6)), 24) || 1;
+      for (let i = 1; i <= steps; i++) {
+        const gx = Math.floor((lastX + (dx * i) / steps) / PIXEL);
+        const gy = Math.floor((lastY + (dy * i) / steps) / PIXEL);
+        const key = gx + "," + gy;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        grain(gx * PIXEL, gy * PIXEL, key);
+      }
+      lastX = x; lastY = y;
+    });
+    hero.addEventListener("pointerleave", () => { lastX = lastY = null; });
+  })();
+
   /* ---------- GSAP setup ---------- */
   if (!window.gsap) return;
   gsap.registerPlugin(ScrollTrigger);
@@ -167,6 +222,16 @@
       thumb = buildStill(item, name);
     }
 
+    // Move the name + description into a caption that overlays the image,
+    // revealed with a gradient scrim on hover.
+    const caption = document.createElement("span");
+    caption.className = "work-caption";
+    const nameEl = item.querySelector(".work-name");
+    const descEl = item.querySelector(".work-desc");
+    if (nameEl) caption.appendChild(nameEl);
+    if (descEl) caption.appendChild(descEl);
+    thumb.appendChild(caption);
+
     item.insertBefore(thumb, item.firstChild);
   });
 
@@ -257,28 +322,6 @@
       start: "top 70%",
       once: true,
       onEnter: () => words[0].classList.add("is-active"),
-    });
-  }
-
-  /* ---------- Marquee: continuous loop + scroll-velocity nudge ---------- */
-  const track = document.querySelector(".marquee-track");
-  if (track) {
-    const loop = gsap.to(track, {
-      xPercent: -50,
-      repeat: -1,
-      duration: 26,
-      ease: "none",
-    });
-    // speed up slightly with scroll velocity
-    ScrollTrigger.create({
-      trigger: ".marquee",
-      start: "top bottom",
-      end: "bottom top",
-      onUpdate: (self) => {
-        const v = 1 + Math.min(Math.abs(self.getVelocity() / 1200), 3);
-        gsap.to(loop, { timeScale: v, duration: 0.3, overwrite: true });
-        gsap.to(loop, { timeScale: 1, duration: 0.8, delay: 0.3, overwrite: false });
-      },
     });
   }
 

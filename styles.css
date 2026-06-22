@@ -104,22 +104,19 @@ em { font-style: italic; }
   justify-content: space-between;
   padding: 1.1rem var(--pad);
   font-size: var(--fs-label);
-  letter-spacing: 0.01em;
-  mix-blend-mode: difference;
-  color: #fff;
+  color: var(--muted);
 }
-.brand { display: inline-flex; align-items: center; gap: 0.55rem; font-weight: 500; }
-.brand-dot {
-  width: 8px; height: 8px; border-radius: 50%;
-  background: var(--coral);
-  animation: pulse 2.4s var(--ease) infinite;
+.brand {
+  display: inline-flex; align-items: center;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+  font-weight: 400;
+  transition: color 0.3s;
 }
-@keyframes pulse {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.6); opacity: 0.5; }
-}
+.brand:hover { color: var(--ink); }
 .nav { display: flex; align-items: center; gap: clamp(0.9rem, 2vw, 1.6rem); }
-.nav a { position: relative; opacity: 0.85; transition: opacity 0.3s; }
+.nav a { position: relative; opacity: 0.85; transition: opacity 0.3s, color 0.3s; }
 .nav a:hover { opacity: 1; }
 .nav a:not(.nav-cta)::after {
   content: ""; position: absolute; left: 0; bottom: -3px;
@@ -127,7 +124,7 @@ em { font-style: italic; }
   transform: scaleX(0); transform-origin: right; transition: transform 0.35s var(--ease);
 }
 .nav a:not(.nav-cta):hover::after { transform: scaleX(1); transform-origin: left; }
-.nav-cta { font-weight: 600; }
+.nav-cta { font-weight: 600; color: var(--ink); letter-spacing: 0.04em; }
 
 /* ---------- Layout ---------- */
 .section {
@@ -148,6 +145,7 @@ em { font-style: italic; }
 
 /* ---------- Hero ---------- */
 .hero {
+  position: relative;
   min-height: 100svh;
   display: flex;
   flex-direction: column;
@@ -155,6 +153,24 @@ em { font-style: italic; }
   max-width: var(--maxw);
   margin: 0 auto;
   padding: 7rem var(--pad) 3rem;
+}
+/* keep all hero content above the sand-trail layer */
+.hero > :not(.sand-trail) { position: relative; z-index: 1; }
+/* sand cursor trail */
+.goo-defs { position: absolute; width: 0; height: 0; pointer-events: none; }
+.sand-trail {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  filter: url(#sand-goo);
+}
+.sand-cell {
+  position: absolute;
+  border-radius: 42%;
+  opacity: 0.9;
+  will-change: opacity, transform;
 }
 .eyebrow {
   font-size: var(--fs-label);
@@ -175,14 +191,35 @@ em { font-style: italic; }
 .hero-title .line { display: block; overflow: hidden; padding-bottom: 0.18em; margin-bottom: -0.18em; }
 .hero-title .line > span { display: block; }
 .hero-title em { color: var(--coral); font-weight: 400; }
+/* "unmissable" — hand-painted brush lettering (from Figma); kept available
+   for the alternate hero hooks. aspect-ratio keeps the 440:88 proportions
+   while height scales with the responsive hero font-size. */
+.hero-title .brush-word {
+  display: inline-block;
+  height: 0.9em;
+  width: auto;
+  aspect-ratio: 440 / 88;
+  vertical-align: -0.1em;
+  margin: 0 0.04em;
+}
+/* "Distinctive brands" — flowing hand-script (from Figma) as the first hero
+   line. Block-level so it stacks above the serif line; width scales with the
+   responsive hero font-size via the em-based height. */
+.hero-title .script-word {
+  display: block;
+  height: 1.6em;
+  width: auto;
+  aspect-ratio: 853 / 128;
+  margin: 0 0 0.04em -0.04em;
+}
 .hero-sub {
-  font-family: var(--font-display);
-  font-weight: 300;
-  max-width: 30ch;
+  font-family: var(--font-body);
+  font-weight: 400;
+  max-width: 34ch;
   margin-top: 2rem;
-  font-size: var(--fs-lead);   /* Alma lead = 24px */
+  font-size: var(--fs-body);   /* Montserrat ~19px */
   color: var(--ink-soft);
-  line-height: 1.4;
+  line-height: 1.45;
   letter-spacing: -0.005em;
 }
 .hero-actions { display: flex; flex-wrap: wrap; gap: 0.9rem; margin-top: 2.4rem; }
@@ -217,22 +254,30 @@ em { font-style: italic; }
 .btn-ghost:hover { background: var(--ink); color: var(--cream); border-color: var(--ink); }
 .btn-block { width: 100%; padding: 1.05rem; font-size: 1.02rem; }
 
-/* ---------- Why ---------- */
-.big-statement {
+/* ---------- Statement headings (Approach + Process) ---------- */
+.statement {
   font-family: var(--font-display);
   font-weight: var(--fw-display);
-  font-size: var(--fs-display);   /* Alma display2 = 81px */
-  line-height: 1.1;
-  letter-spacing: -0.015em;
+  font-size: clamp(2.2rem, 1.1rem + 3.1vw, 3.5rem);   /* ~56px */
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  max-width: 20ch;
 }
-.big-statement .reveal-line { display: block; }
-.big-statement .muted { color: var(--muted); }
+.statement-sub {
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  color: var(--ink-soft);
+  margin-top: 1.4rem;
+  line-height: 1.5;
+  max-width: 42ch;
+}
 
-/* ---------- What / Services ---------- */
+/* ---------- Services (under the Approach statement) ---------- */
 .services {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: clamp(2rem, 4vw, 4rem);
+  margin-top: clamp(4rem, 8vh, 7rem);
   border-top: 1px solid var(--line);
   padding-top: 4rem;
 }
@@ -248,26 +293,19 @@ em { font-style: italic; }
   letter-spacing: -0.01em;
 }
 .service p { color: var(--ink-soft); font-size: var(--fs-body); line-height: 1.55; }
-.what-note {
-  margin-top: 5rem;
-  font-size: var(--fs-lead);
-  color: var(--ink-soft);
-}
-.what-note a { color: var(--coral-deep); font-weight: 600; border-bottom: 1px solid transparent; transition: border 0.3s; }
-.what-note a:hover { border-color: var(--coral-deep); }
 
 /* ---------- Who ---------- */
 .who { background: var(--cream-deep); max-width: none; }
 .who > * { max-width: var(--maxw); margin-left: auto; margin-right: auto; }
 .who-grid {
   display: grid;
-  grid-template-columns: 1fr 1.6fr;
+  grid-template-columns: 1.6fr 1fr;
   gap: clamp(2rem, 5vw, 5rem);
-  align-items: start;
+  align-items: center;
 }
-.who-intro { position: sticky; top: 6rem; }
+.who-intro { position: static; }
+.who-intro .who-lead { margin-bottom: 1.3rem; }
 .who-photo {
-  margin-bottom: 1.6rem;
   border-radius: 14px;
   overflow: hidden;
   aspect-ratio: 4 / 5;
@@ -276,10 +314,10 @@ em { font-style: italic; }
 .who-photo img {
   width: 100%; height: 100%;
   object-fit: cover; display: block;
-  filter: saturate(1.02);
-  transition: transform 0.8s var(--ease);
+  filter: grayscale(1);
+  transition: transform 0.8s var(--ease), filter 0.6s var(--ease);
 }
-.who-photo:hover img { transform: scale(1.04); }
+.who-photo:hover img { transform: scale(1.04); filter: grayscale(0); }
 .who-lead {
   font-family: var(--font-display);
   font-weight: var(--fw-display);
@@ -287,22 +325,23 @@ em { font-style: italic; }
   line-height: 1.05;
   letter-spacing: -0.02em;
 }
+/* "Robert" — hand-script name (from Figma), inline after "Hi, I'm".
+   Height scales with the heading; vertical-align seats it on the baseline
+   while leaving room for the descender on the R. */
+.who-lead .script-name {
+  display: inline-block;
+  height: 0.74em;
+  width: auto;
+  aspect-ratio: 319 / 105;
+  vertical-align: -0.16em;
+  margin-left: 0.16em;
+}
 .who-body p { font-size: var(--fs-lead); color: var(--ink-soft); line-height: 1.6; margin-bottom: 1.7rem; max-width: 56ch; }
 .who-kicker strong { color: var(--ink); font-weight: 600; }
 
 /* ---------- How / Process ---------- */
-.how-title {
-  font-family: var(--font-display);
-  font-weight: var(--fw-display);
-  font-size: var(--fs-display);   /* 81px */
-  line-height: 1.06;
-  letter-spacing: -0.02em;
-  margin-bottom: 2.5rem;
-  display: flex; flex-wrap: wrap; align-items: center; gap: 0.4em;
-}
-.how-title .word { transition: color 0.5s var(--ease); display: inline-block; }
-.how-title .word.is-active { color: var(--coral); }
-.how-title .sep { color: var(--muted); font-size: 0.7em; }
+.how .statement,
+.work .statement { margin-bottom: clamp(1.8rem, 3.5vh, 2.6rem); }
 .how-intro {
   max-width: 62ch;
   font-size: var(--fs-lead);
@@ -318,52 +357,62 @@ em { font-style: italic; }
   margin-bottom: 1.4rem;
 }
 
-/* adelt.io-style process: full-width stacked rows */
+/* Process: four cream-deep cards — number, title, kicker, then a
+   diamond-bulleted list with hairline separators. */
 .steps {
-  display: flex;
-  flex-direction: column;
-  border-top: 1px solid var(--ink);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2px;
 }
 .step {
-  display: grid;
-  grid-template-columns: auto minmax(200px, 0.9fr) 1.3fr;
-  gap: clamp(1.5rem, 4vw, 4rem);
-  align-items: start;
-  padding: clamp(2rem, 4vw, 3.4rem) 0;
-  border-bottom: 1px solid var(--line);
-  transition: padding-left 0.45s var(--ease);
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+  background: var(--cream-deep);
+  padding: clamp(1.4rem, 2vw, 1.9rem) clamp(1.1rem, 1.7vw, 1.8rem) clamp(1.6rem, 2.2vw, 2.1rem);
 }
-.step:hover { padding-left: clamp(0px, 1.5vw, 1.5rem); }
 .step-num {
-  font-size: var(--fs-label);
+  font-size: 0.7rem;
   color: var(--muted);
   font-weight: 600;
-  letter-spacing: 0.12em;
-  padding-top: 0.7rem;
+  letter-spacing: 0.14em;
 }
 .step-head h4 {
   font-family: var(--font-display);
   font-weight: var(--fw-display);
-  font-size: var(--fs-h1);   /* 54px — adelt's big phase titles */
+  font-size: var(--fs-h2);   /* ~36px */
   line-height: 1;
-  letter-spacing: -0.01em;
-  transition: color 0.3s;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.55rem;
 }
-.step:hover .step-head h4 { color: var(--coral); }
 .step-kicker {
   display: block;
-  margin-top: 0.7rem;
-  font-size: var(--fs-label);
-  letter-spacing: 0.12em;
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--coral-deep);
 }
-.step ul { list-style: none; }
-.step li {
-  font-size: var(--fs-body); color: var(--ink-soft); line-height: 1.4;
-  padding: 0.75rem 0; border-top: 1px solid var(--line);
+.step ul {
+  list-style: none;
+  border-top: 1px solid rgba(28, 26, 23, 0.14);
 }
-.step li:first-child { border-top: none; padding-top: 0; }
+.step li {
+  display: flex;
+  gap: 0.6rem;
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+  line-height: 1.5;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid rgba(28, 26, 23, 0.14);
+}
+.step li::before {
+  content: "◆";
+  flex-shrink: 0;
+  color: var(--muted);
+  font-size: 0.5em;
+  position: relative;
+  top: 0.5em;
+}
 .how-foot { margin-top: 3rem; font-size: var(--fs-label); color: var(--muted); max-width: 64ch; font-style: italic; }
 
 /* ---------- The Work ---------- */
@@ -375,31 +424,46 @@ em { font-style: italic; }
   grid-template-columns: repeat(3, 1fr);
   gap: clamp(1.6rem, 3vw, 2.8rem) clamp(1.4rem, 2.5vw, 2.2rem);
 }
-.work-item {
-  display: flex;
-  flex-direction: column;
+.work-item { position: relative; display: block; }
+/* Caption overlays the image's lower edge, revealed on hover over a gradient
+   scrim (sits inside .work-thumb, so it's clipped to the rounded card). */
+.work-caption {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  display: flex; flex-direction: column;
+  padding: 2.6rem 1.1rem 1.05rem;
+  background: linear-gradient(to top,
+    rgba(20, 18, 15, 0.82) 0%,
+    rgba(20, 18, 15, 0.45) 45%,
+    rgba(20, 18, 15, 0) 100%);
+  opacity: 0; transform: translateY(10px);
+  transition: opacity 0.45s var(--ease), transform 0.45s var(--ease);
+  pointer-events: none;
 }
+.work-item:hover .work-caption { opacity: 1; transform: none; }
 .work-name {
   font-family: var(--font-display);
   font-weight: var(--fw-display);
-  font-size: var(--fs-h2);   /* 36px */
-  line-height: 1.05;
+  font-size: clamp(1.25rem, 0.9rem + 1vw, 1.6rem);
+  line-height: 1.08;
   letter-spacing: -0.01em;
-  transition: color 0.3s;
+  color: var(--cream);
 }
-.work-desc { font-size: var(--fs-label); color: var(--muted); margin-top: 0.35rem; }
-.work-item:hover .work-name { color: var(--coral); }
-.work-item--building .work-name { color: var(--coral-deep); }
+.work-desc { font-size: var(--fs-label); color: rgba(244, 239, 230, 0.82); margin-top: 0.25rem; }
+.work-item--building .work-name { color: var(--coral); }
+/* Touch devices (no hover): keep captions visible so names are never hidden */
+@media (hover: none) {
+  .work-caption { opacity: 1; transform: none; }
+}
 
 /* Project media — full-width card top (still, hover-swap, or autoplay video) */
 .work-thumb {
+  display: block;
   position: relative;
   width: 100%;
   aspect-ratio: 4 / 3;
   border-radius: 12px;
   overflow: hidden;
   background: var(--cream-deep);
-  margin-bottom: 1.1rem;
 }
 .work-thumb img,
 .work-thumb video {
@@ -421,57 +485,29 @@ em { font-style: italic; }
 /* McDonald's: anchor the crop to the top so the headline text stays in frame */
 .work-item--mcd .work-thumb img { object-position: center top; }
 
-/* ---------- Marquee ---------- */
-.marquee {
-  overflow: hidden;
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-  padding: 1.4rem 0;
-  background: var(--ink);
-  color: var(--cream);
-}
-.marquee-track {
-  display: inline-flex; align-items: center; gap: 1.6rem;
-  white-space: nowrap;
-  font-family: var(--font-display);
-  font-size: var(--fs-h1);   /* 54px */
-  font-weight: var(--fw-display);
-  will-change: transform;
-}
-.marquee-track span:nth-child(even) { color: var(--coral); }
-
 /* ---------- Contact ---------- */
 .contact { text-align: center; }
-.contact .section-index { color: var(--coral); }
 .contact-title {
   font-family: var(--font-display);
   font-weight: var(--fw-display);
-  font-size: var(--fs-display);   /* 81px */
-  line-height: 1.06;
+  font-size: clamp(2.2rem, 1.1rem + 3.1vw, 3.5rem);   /* ~56px */
+  line-height: 1.08;
   letter-spacing: -0.02em;
 }
 .contact-title .reveal-line { display: block; }
-.contact-sub { max-width: 44ch; margin: 2rem auto 4rem; font-size: var(--fs-lead); color: var(--ink-soft); line-height: 1.5; }
-.contact-form {
-  max-width: 620px; margin: 0 auto; text-align: left;
-  display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem;
+/* "Let's talk!" — hand-script (from Figma), centered below the title */
+.contact-script {
+  display: block;
+  width: clamp(180px, 24vw, 250px);
+  height: auto;
+  margin: 0.7rem auto 0;
 }
-.field { display: flex; flex-direction: column; }
-.field--full { grid-column: 1 / -1; }
-.field label { font-size: var(--fs-label); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.5rem; }
-.field input, .field textarea {
-  font-family: var(--font-body); font-size: var(--fs-body); color: var(--ink);
-  background: transparent;
-  border: none; border-bottom: 1px solid var(--line);
-  padding: 0.7rem 0; outline: none; resize: vertical;
-  transition: border-color 0.3s;
+/* email pill — the single CTA */
+.contact-email {
+  max-width: 620px;
+  margin: clamp(2.4rem, 5vh, 3.6rem) auto 0;
+  font-size: 1.02rem;
 }
-.field input::placeholder, .field textarea::placeholder { color: var(--muted); opacity: 0.7; }
-.field input:focus, .field textarea:focus { border-color: var(--coral); }
-.contact-form .btn-block { grid-column: 1 / -1; margin-top: 0.5rem; }
-.form-note { grid-column: 1 / -1; text-align: center; font-size: var(--fs-label); color: var(--muted); margin-top: 0.4rem; }
-.form-note a { color: var(--coral-deep); font-weight: 600; border-bottom: 1px solid transparent; transition: border 0.3s; }
-.form-note a:hover { border-color: var(--coral-deep); }
 
 /* ---------- Footer ---------- */
 .site-footer {
@@ -493,17 +529,15 @@ em { font-style: italic; }
 /* ---------- Responsive ---------- */
 @media (max-width: 860px) {
   .services { grid-template-columns: 1fr; gap: 2.5rem; }
-  /* process rows collapse: number + title, then deliverables below */
-  .step { grid-template-columns: auto 1fr; gap: 0.6rem 1.4rem; }
-  .step ul { grid-column: 1 / -1; margin-top: 1.2rem; }
+  .steps { grid-template-columns: repeat(2, 1fr); }
   .who-grid { grid-template-columns: 1fr; }
-  .who-intro { position: static; }
+  .who-intro { order: -1; }
   .who-photo { max-width: 320px; aspect-ratio: 1 / 1; }
   .work-list { grid-template-columns: repeat(2, 1fr); }
   .nav a:not(.nav-cta) { display: none; }
 }
 @media (max-width: 560px) {
-  .contact-form { grid-template-columns: 1fr; }
+  .steps { grid-template-columns: 1fr; }
   .work-list { grid-template-columns: 1fr; }
   .site-header { font-size: 0.72rem; }
   .brand { max-width: 60vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

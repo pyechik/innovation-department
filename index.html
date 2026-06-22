@@ -20,17 +20,21 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <!-- Gooey filter that melts the sand-trail grains into flowing blobs -->
+  <svg class="goo-defs" width="0" height="0" aria-hidden="true" focusable="false">
+    <defs>
+      <filter id="sand-goo" color-interpolation-filters="sRGB">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur" />
+        <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="goo" />
+        <feComposite in="SourceGraphic" in2="goo" operator="atop" />
+      </filter>
+    </defs>
+  </svg>
+
   <!-- ===== Top header ===== -->
   <header class="site-header" id="top">
-    <a class="brand" href="#top">
-      <span class="brand-dot" aria-hidden="true"></span>
-      hello@innovation-department.com
-    </a>
+    <a class="brand" href="#top">The Innovation Department</a>
     <nav class="nav">
-      <a href="#why">Why</a>
-      <a href="#what">What</a>
-      <a href="#who">Who</a>
-      <a href="#how">How</a>
       <a href="#contact" class="nav-cta">Let’s go ↓</a>
     </nav>
   </header>
@@ -38,11 +42,10 @@
   <main>
     <!-- ===== Hero ===== -->
     <section class="hero" id="hero">
-      <p class="eyebrow reveal-up">The Innovation Department · San Francisco</p>
+      <div class="sand-trail" aria-hidden="true"></div>
       <h1 class="hero-title">
-        <span class="line"><span>Distinctive brands</span></span>
-        <span class="line"><span>for <em>unmissable</em></span></span>
-        <span class="line"><span>products.</span></span>
+        <span class="line"><span><img class="script-word" src="images/distinctive-brands.webp" alt="Distinctive brands" width="853" height="128" /></span></span>
+        <span class="line"><span>for unmissable products.</span></span>
       </h1>
       <p class="hero-sub reveal-up">
         A San Francisco-based brand incubator for founders ready to
@@ -50,28 +53,13 @@
       </p>
       <div class="hero-actions reveal-up">
         <a href="#contact" class="btn btn-primary" data-magnetic>Let’s talk →</a>
-        <a href="#why" class="btn btn-ghost">See how it works</a>
-      </div>
-      <div class="scroll-hint reveal-up" aria-hidden="true">
-        <span>Scroll</span>
-        <span class="scroll-line"></span>
       </div>
     </section>
 
-    <!-- ===== Why ===== -->
-    <section class="section why" id="why">
-      <span class="section-index">01 — Why</span>
-      <h2 class="big-statement">
-        <span class="reveal-line">Every great brand</span>
-        <span class="reveal-line">starts with a simple idea.</span>
-        <span class="reveal-line muted">We help you shape yours —</span>
-        <span class="reveal-line muted">and build everything around it.</span>
-      </h2>
-    </section>
-
-    <!-- ===== What / Services ===== -->
-    <section class="section what" id="what">
-      <span class="section-index reveal-up">02 — What</span>
+    <!-- ===== Approach + Services ===== -->
+    <section class="section why-what" id="what">
+      <h2 class="statement reveal-up">Every great brand starts with a simple idea.</h2>
+      <p class="statement-sub reveal-up">We help you shape yours and everything around it.</p>
       <div class="services">
         <article class="service reveal-up">
           <span class="service-no">01</span>
@@ -89,42 +77,27 @@
           <p>White-space identification, new brand creation, and portfolio thinking that unlocks growth and points toward what’s next.</p>
         </article>
       </div>
-      <p class="what-note reveal-up">
-        Need something more specific? We tailor every engagement to your
-        challenge, budget, and timeline. <a href="#contact">Get in touch →</a>
-      </p>
     </section>
 
     <!-- ===== Who / About ===== -->
     <section class="section who" id="who">
-      <span class="section-index reveal-up">03 — Who</span>
       <div class="who-grid">
-        <div class="who-intro">
-          <figure class="who-photo reveal-up">
-            <img src="images/Robert1.jpg" alt="Robert Pietrzyk" loading="lazy" data-fallback="Robert" />
-          </figure>
-          <p class="who-lead reveal-up">Hi, I’m Robert.</p>
-        </div>
         <div class="who-body">
           <p class="reveal-up">Twenty years ago, I started as a designer. Since then I’ve been a strategist, researcher, founder, department head, and lone tinkerer — but the thread connecting all of it has stayed the same: solving hard problems with curiosity and creativity.</p>
           <p class="reveal-up">I spent a decade working with amazing teams at JKR, Unilever, and Pearlfisher on some of the world’s biggest, most distinctive brands — Kraft Heinz, Heineken, McDonald’s, Hilton. This year I relocated from New York to San Francisco to work directly with founders building something new.</p>
-          <p class="who-kicker reveal-up"><strong>The Innovation Department is where the work happens.</strong></p>
+        </div>
+        <div class="who-intro">
+          <p class="who-lead reveal-up">Hi, I’m <img class="script-name" src="images/robert.webp" alt="Robert" width="319" height="105" /></p>
+          <figure class="who-photo reveal-up">
+            <img src="images/Robert1.jpg" alt="Robert Pietrzyk" loading="lazy" data-fallback="Robert" />
+          </figure>
         </div>
       </div>
     </section>
 
     <!-- ===== How / Process ===== -->
     <section class="section how" id="how">
-      <span class="section-index reveal-up">04 — The Process</span>
-      <h2 class="how-title">
-        <span class="word" data-step="0">Dig</span>
-        <span class="sep">›</span>
-        <span class="word" data-step="1">Define</span>
-        <span class="sep">›</span>
-        <span class="word" data-step="2">Design</span>
-        <span class="sep">›</span>
-        <span class="word" data-step="3">Deliver</span>
-      </h2>
+      <h2 class="statement reveal-up">My Process</h2>
       <p class="how-intro reveal-up">
         We start by listening — to you, your audience, and your category.
         Then we dig: into culture, into semiotics, into what’s missing in
@@ -194,13 +167,12 @@
 
     <!-- ===== The Work ===== -->
     <section class="section work" id="work">
-      <span class="section-index reveal-up">05 — The Work</span>
+      <h2 class="statement reveal-up">My Work</h2>
       <p class="work-intro reveal-up">
-        Much of the upstream innovation work is confidential, but this
+        Much of the upstream innovation work is confidential, but the above
         approach has shaped strategies and expressions for some of the
-        world’s most iconic and disruptive brands. A handful in the public
-        domain, all developed in collaboration with leading branding
-        consultancies:
+        world’s most iconic and disruptive brands. Below are a handful of
+        projects in the public domain.
       </p>
       <ul class="work-list">
         <li class="work-item reveal-up" data-video="images/swell3.webm,images/Swell1.mp4" data-poster="images/swell4.webp"><span class="work-name">S’well</span><span class="work-desc">Brand Repositioning &amp; Relaunch</span></li>
@@ -218,50 +190,14 @@
       </ul>
     </section>
 
-    <!-- ===== Marquee ===== -->
-    <section class="marquee" aria-hidden="true">
-      <div class="marquee-track">
-        <span>Kraft Heinz</span><span>·</span><span>Heineken</span><span>·</span><span>McDonald’s</span><span>·</span><span>Hilton</span><span>·</span><span>S’well</span><span>·</span><span>Planters</span><span>·</span><span>Capri Sun</span><span>·</span><span>Annie’s</span><span>·</span><span>Tecate</span><span>·</span><span>Lunchables</span><span>·</span>
-        <span>Kraft Heinz</span><span>·</span><span>Heineken</span><span>·</span><span>McDonald’s</span><span>·</span><span>Hilton</span><span>·</span><span>S’well</span><span>·</span><span>Planters</span><span>·</span><span>Capri Sun</span><span>·</span><span>Annie’s</span><span>·</span><span>Tecate</span><span>·</span><span>Lunchables</span><span>·</span>
-      </div>
-    </section>
-
     <!-- ===== Contact / Sign-off ===== -->
     <section class="section contact" id="contact">
-      <span class="section-index reveal-up">06 — Let’s talk</span>
       <h2 class="contact-title">
         <span class="reveal-line">Have an idea you’re</span>
         <span class="reveal-line">ready to bring to life?</span>
       </h2>
-      <p class="contact-sub reveal-up">
-        A business challenge in need of a brand or design solution? A product
-        that deserves a distinctive foundation? Let’s talk.
-      </p>
-
-      <!--
-        FORM SETUP: this posts to Formspree (free, no server).
-        1. Create a free form at https://formspree.io
-        2. Replace YOUR_FORM_ID below with your form's ID.
-        Until then, the form falls back to opening an email.
-      -->
-      <form class="contact-form reveal-up" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
-        <div class="field">
-          <label for="name">Name</label>
-          <input type="text" id="name" name="name" placeholder="Your name" required />
-        </div>
-        <div class="field">
-          <label for="company">Company</label>
-          <input type="text" id="company" name="company" placeholder="Your company" />
-        </div>
-        <div class="field field--full">
-          <label for="message">What are you working on?</label>
-          <textarea id="message" name="message" rows="4" placeholder="Tell us a little about it…" required></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary btn-block" data-magnetic>Send →</button>
-        <p class="form-note">Or reach us directly at
-          <a href="mailto:hello@innovation-department.com">hello@innovation-department.com</a>
-        </p>
-      </form>
+      <img class="contact-script reveal-up" src="images/lets-talk.webp" alt="Let’s talk!" width="457" height="125" />
+      <a class="btn btn-primary btn-block contact-email reveal-up" href="mailto:hello@innovation-department.com">hello@innovation-department.com →</a>
     </section>
   </main>
 
