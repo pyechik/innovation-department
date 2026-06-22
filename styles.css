@@ -115,8 +115,16 @@ em { font-style: italic; }
   transition: color 0.3s;
 }
 .brand:hover { color: var(--ink); }
-.nav { display: flex; align-items: center; gap: clamp(0.9rem, 2vw, 1.6rem); }
-.nav a { position: relative; opacity: 0.85; transition: opacity 0.3s, color 0.3s; }
+.nav { display: flex; align-items: center; gap: clamp(0.95rem, 1.8vw, 1.3rem); }
+.nav a {
+  position: relative;
+  color: var(--ink);
+  font-weight: 500;
+  opacity: 0.7;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  transition: opacity 0.3s, color 0.3s;
+}
 .nav a:hover { opacity: 1; }
 .nav a:not(.nav-cta)::after {
   content: ""; position: absolute; left: 0; bottom: -3px;
@@ -124,7 +132,10 @@ em { font-style: italic; }
   transform: scaleX(0); transform-origin: right; transition: transform 0.35s var(--ease);
 }
 .nav a:not(.nav-cta):hover::after { transform: scaleX(1); transform-origin: left; }
-.nav-cta { font-weight: 600; color: var(--ink); letter-spacing: 0.04em; }
+/* active section highlight (scroll-spy) */
+.nav a.is-current { opacity: 1; color: var(--coral-deep); }
+.nav a:not(.nav-cta).is-current::after { transform: scaleX(1); transform-origin: left; }
+.nav-cta { font-weight: 600; opacity: 1; letter-spacing: 0.1em; }
 
 /* ---------- Layout ---------- */
 .section {

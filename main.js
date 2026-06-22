@@ -35,6 +35,50 @@
     });
   });
 
+  /* ---------- Scroll-spy: highlight the nav link of the section in view ----------
+     Active = the linked section whose top has most recently passed an activation
+     line near the top of the viewport. Because the top is the tie-breaker, a
+     nested target (e.g. #what inside the #why section) correctly takes over once
+     its own top passes the line. */
+  (function navSpy() {
+    const targets = [...document.querySelectorAll('.nav a[href^="#"]')]
+      .map((a) => {
+        const el = document.querySelector(a.getAttribute("href"));
+        return el ? { a, el } : null;
+      })
+      .filter(Boolean);
+    if (!targets.length) return;
+
+    let current = null;
+    function update() {
+      const line = window.innerHeight * 0.35;
+      let active = null, activeTop = -Infinity;
+      for (const t of targets) {
+        const top = t.el.getBoundingClientRect().top;
+        if (top <= line && top > activeTop) { active = t; activeTop = top; }
+      }
+      if (active === current) return;
+      targets.forEach((t) => {
+        const on = t === active;
+        t.a.classList.toggle("is-current", on);
+        if (on) t.a.setAttribute("aria-current", "true");
+        else t.a.removeAttribute("aria-current");
+      });
+      current = active;
+    }
+
+    let ticking = false;
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => { update(); ticking = false; });
+    }
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+    if (lenis) lenis.on("scroll", onScroll);
+    update();
+  })();
+
   /* ---------- Hero "sand" cursor trail ----------
      A pixel-trail effect (grid cells light up as the cursor passes) styled as
      warm sand grains; an SVG gooey filter melts neighbours into flowing blobs.
