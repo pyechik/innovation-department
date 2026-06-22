@@ -183,13 +183,6 @@ em { font-style: italic; }
   opacity: 0.9;
   will-change: opacity, transform;
 }
-.eyebrow {
-  font-size: var(--fs-label);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 1.6rem;
-}
 .hero-title {
   font-family: var(--font-display);
   font-weight: var(--fw-display);
@@ -201,32 +194,23 @@ em { font-style: italic; }
    the equal negative margin keeps line spacing unchanged */
 .hero-title .line { display: block; overflow: hidden; padding-bottom: 0.18em; margin-bottom: -0.18em; }
 .hero-title .line > span { display: block; }
-.hero-title em { color: var(--coral); font-weight: 400; }
-/* "unmissable" — hand-painted brush lettering (from Figma); kept available
-   for the alternate hero hooks. aspect-ratio keeps the 440:88 proportions
-   while height scales with the responsive hero font-size. */
-.hero-title .brush-word {
-  display: inline-block;
-  height: 0.9em;
-  width: auto;
-  aspect-ratio: 440 / 88;
-  vertical-align: -0.1em;
-  margin: 0 0.04em;
+/* The statement is built from word assets laid on a shared baseline:
+   script "Distinctive"/"brands" + serif "for"/"products" (all outlined vector
+   SVGs) + the brush "unmissable". Heights are em-based so the whole line scales
+   with --fs-hero; bottom-alignment keeps the baselines together. */
+.hero-title .line > span.words {
+  display: flex;
+  align-items: flex-end;
+  /* words sit edge-to-edge — the spacing is baked into each SVG's bounds */
+  gap: 0;
 }
-/* "Distinctive brands" — flowing hand-script (from Figma) as the first hero
-   line. Block-level so it stacks above the serif line; width scales with the
-   responsive hero font-size via the em-based height. */
-.hero-title .script-word {
-  display: block;
-  height: 1.6em;
-  width: auto;
-  aspect-ratio: 853 / 128;
-  margin: 0 0 0.04em -0.04em;
-}
+.hero-title .word { display: block; width: auto; flex: 0 0 auto; }
+.hero-title .word--script { height: 0.85em; }   /* distinctive / brands (vbH ≈ 75.7) */
+.hero-title .word--serif  { height: 0.785em; }  /* for / unmissable / products (vbH ≈ 70) */
 .hero-sub {
   font-family: var(--font-body);
   font-weight: 400;
-  max-width: 34ch;
+  max-width: 32rem;   /* ≈ design 489px — wraps to two lines */
   margin-top: 2rem;
   font-size: var(--fs-body);   /* Montserrat ~19px */
   color: var(--ink-soft);
@@ -234,21 +218,6 @@ em { font-style: italic; }
   letter-spacing: -0.005em;
 }
 .hero-actions { display: flex; flex-wrap: wrap; gap: 0.9rem; margin-top: 2.4rem; }
-.scroll-hint {
-  display: flex; align-items: center; gap: 0.8rem;
-  margin-top: auto; padding-top: 3rem;
-  font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted);
-}
-.scroll-line { width: 60px; height: 1px; background: var(--ink); position: relative; overflow: hidden; }
-.scroll-line::after {
-  content: ""; position: absolute; inset: 0;
-  background: var(--coral);
-  animation: sweep 2.2s var(--ease) infinite;
-}
-@keyframes sweep {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}
 
 /* ---------- Buttons ---------- */
 .btn {
@@ -348,7 +317,6 @@ em { font-style: italic; }
   margin-left: 0.16em;
 }
 .who-body p { font-size: var(--fs-lead); color: var(--ink-soft); line-height: 1.6; margin-bottom: 1.7rem; max-width: 56ch; }
-.who-kicker strong { color: var(--ink); font-weight: 600; }
 
 /* ---------- How / Process ---------- */
 .how .statement,

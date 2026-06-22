@@ -291,11 +291,6 @@
       ease: "expo.out",
       stagger: 0.12,
     })
-    .from(
-      ".hero .eyebrow",
-      { y: 20, opacity: 0, duration: 0.8, ease: "power3.out" },
-      0
-    )
     .to(
       ".hero .reveal-up",
       { y: 0, opacity: 1, duration: 0.9, ease: "power3.out", stagger: 0.12 },
@@ -348,26 +343,6 @@
         }),
     });
   });
-
-  /* ---------- "Dig › Define › Design › Deliver" word highlight ---------- */
-  const words = gsap.utils.toArray(".how-title .word");
-  if (words.length) {
-    words.forEach((word, i) => {
-      ScrollTrigger.create({
-        trigger: ".how",
-        start: () => `top+=${i * 12}% center`,
-        end: () => `top+=${(i + 1) * 12}% center`,
-        onToggle: (self) => word.classList.toggle("is-active", self.isActive),
-      });
-    });
-    // first word lit by default once section is in view
-    ScrollTrigger.create({
-      trigger: ".how",
-      start: "top 70%",
-      once: true,
-      onEnter: () => words[0].classList.add("is-active"),
-    });
-  }
 
   /* ---------- Subtle hero parallax on scroll ---------- */
   gsap.to(".hero-title", {
