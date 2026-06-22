@@ -59,9 +59,7 @@
       }
       if (active === current) return;
       targets.forEach((t) => {
-        const on = t === active;
-        t.a.classList.toggle("is-current", on);
-        if (on) t.a.setAttribute("aria-current", "true");
+        if (t === active) t.a.setAttribute("aria-current", "true");
         else t.a.removeAttribute("aria-current");
       });
       current = active;

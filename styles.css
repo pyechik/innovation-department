@@ -131,11 +131,11 @@ em { font-style: italic; }
   width: 100%; height: 1px; background: currentColor;
   transform: scaleX(0); transform-origin: right; transition: transform 0.35s var(--ease);
 }
-.nav a:not(.nav-cta):hover::after { transform: scaleX(1); transform-origin: left; }
-/* active section highlight (scroll-spy) */
-.nav a.is-current { opacity: 1; color: var(--coral-deep); }
-.nav a:not(.nav-cta).is-current::after { transform: scaleX(1); transform-origin: left; }
-.nav-cta { font-weight: 600; opacity: 1; letter-spacing: 0.1em; }
+/* underline reveals on hover and for the active section (scroll-spy) */
+.nav a:not(.nav-cta):hover::after,
+.nav a:not(.nav-cta)[aria-current]::after { transform: scaleX(1); transform-origin: left; }
+.nav a[aria-current] { opacity: 1; color: var(--coral-deep); }
+.nav-cta { font-weight: 600; opacity: 1; }
 
 /* ---------- Layout ---------- */
 .section {
@@ -194,17 +194,17 @@ em { font-style: italic; }
    the equal negative margin keeps line spacing unchanged */
 .hero-title .line { display: block; overflow: hidden; padding-bottom: 0.18em; margin-bottom: -0.18em; }
 .hero-title .line > span { display: block; }
-/* The statement is built from word assets laid on a shared baseline:
-   script "Distinctive"/"brands" + serif "for"/"products" (all outlined vector
-   SVGs) + the brush "unmissable". Heights are em-based so the whole line scales
-   with --fs-hero; bottom-alignment keeps the baselines together. */
+/* The statement is built from outlined-vector word SVGs laid on a shared
+   baseline: script "Distinctive"/"brands" + serif "for"/"unmissable"/"products".
+   Heights are em-based so the whole line scales with --fs-hero;
+   bottom-alignment keeps the baselines together. */
 .hero-title .line > span.words {
   display: flex;
   align-items: flex-end;
   /* words sit edge-to-edge — the spacing is baked into each SVG's bounds */
   gap: 0;
 }
-.hero-title .word { display: block; width: auto; flex: 0 0 auto; }
+.hero-title .word { flex: 0 0 auto; }
 .hero-title .word--script { height: 0.85em; }   /* distinctive / brands (vbH ≈ 75.7) */
 .hero-title .word--serif  { height: 0.785em; }  /* for / unmissable / products (vbH ≈ 70) */
 .hero-sub {
