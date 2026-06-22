@@ -106,15 +106,9 @@ em { font-style: italic; }
   font-size: var(--fs-label);
   color: var(--muted);
 }
-.brand {
-  display: inline-flex; align-items: center;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: var(--muted);
-  font-weight: 400;
-  transition: color 0.3s;
-}
-.brand:hover { color: var(--ink); }
+.brand { display: inline-flex; align-items: center; transition: opacity 0.3s; }
+.brand:hover { opacity: 0.6; }
+.brand-logo { display: block; height: 0.9rem; width: auto; }
 .nav { display: flex; align-items: center; gap: clamp(0.95rem, 1.8vw, 1.3rem); }
 .nav a {
   position: relative;
@@ -241,7 +235,6 @@ em { font-style: italic; }
   font-size: clamp(2.2rem, 1.1rem + 3.1vw, 3.5rem);   /* ~56px */
   line-height: 1.08;
   letter-spacing: -0.02em;
-  max-width: 20ch;
 }
 .statement-sub {
   font-family: var(--font-body);
@@ -283,8 +276,6 @@ em { font-style: italic; }
   gap: clamp(2rem, 5vw, 5rem);
   align-items: center;
 }
-.who-intro { position: static; }
-.who-intro .who-lead { margin-bottom: 1.3rem; }
 .who-photo {
   border-radius: 14px;
   overflow: hidden;
@@ -304,6 +295,7 @@ em { font-style: italic; }
   font-size: var(--fs-h1);   /* 54px */
   line-height: 1.05;
   letter-spacing: -0.02em;
+  margin-bottom: 1.5rem;
 }
 /* "Robert" — hand-script name (from Figma), inline after "Hi, I'm".
    Height scales with the heading; vertical-align seats it on the baseline
@@ -313,10 +305,10 @@ em { font-style: italic; }
   height: 0.74em;
   width: auto;
   aspect-ratio: 319 / 105;
-  vertical-align: -0.16em;
-  margin-left: 0.16em;
+  vertical-align: -0.19em;
+  margin-left: 0.05em;
 }
-.who-body p { font-size: var(--fs-lead); color: var(--ink-soft); line-height: 1.6; margin-bottom: 1.7rem; max-width: 56ch; }
+.who-body p:not(.who-lead) { font-size: var(--fs-lead); color: var(--ink-soft); line-height: 1.6; margin-bottom: 1.7rem; max-width: 56ch; }
 
 /* ---------- How / Process ---------- */
 .how .statement,
@@ -510,8 +502,7 @@ em { font-style: italic; }
   .services { grid-template-columns: 1fr; gap: 2.5rem; }
   .steps { grid-template-columns: repeat(2, 1fr); }
   .who-grid { grid-template-columns: 1fr; }
-  .who-intro { order: -1; }
-  .who-photo { max-width: 320px; aspect-ratio: 1 / 1; }
+  .who-photo { order: -1; max-width: 320px; aspect-ratio: 1 / 1; }
   .work-list { grid-template-columns: repeat(2, 1fr); }
   .nav a:not(.nav-cta) { display: none; }
 }
@@ -519,7 +510,7 @@ em { font-style: italic; }
   .steps { grid-template-columns: 1fr; }
   .work-list { grid-template-columns: 1fr; }
   .site-header { font-size: 0.72rem; }
-  .brand { max-width: 60vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .brand-logo { height: 0.72rem; max-width: 60vw; }
 }
 
 /* ---------- Reduced motion ---------- */
