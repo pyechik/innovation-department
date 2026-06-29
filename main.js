@@ -7,6 +7,62 @@
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   document.documentElement.classList.add("js-ready");
 
+  /* ---------- Theme (light / dark) ----------
+     The inline <head> script + CSS already paint the right colors. Here we
+     swap the monochrome wordmark/logo SVGs (_b ⇄ _w), keep the footer toggle
+     in sync, persist an explicit choice, and follow the system when none is set. */
+  (function theme() {
+    const root = document.documentElement;
+    const toggle = document.getElementById("themeToggle");
+    const darkMedia = window.matchMedia("(prefers-color-scheme: dark)");
+    const themed = document.querySelectorAll(".brand-logo, .hero-title .word");
+    const themedExplicit = document.querySelectorAll("[data-src-light][data-src-dark]");
+
+    function resolved() {
+      const set = root.getAttribute("data-theme");
+      if (set === "dark" || set === "light") return set;
+      return darkMedia.matches ? "dark" : "light";
+    }
+    function swapImages(mode) {
+      // Wordmarks / logo follow the _b (black) ⇄ _w (white) filename convention.
+      const from = mode === "dark" ? "_b." : "_w.";
+      const to = mode === "dark" ? "_w." : "_b.";
+      themed.forEach((img) => {
+        const src = img.getAttribute("src");
+        if (src && src.indexOf(from) !== -1) img.setAttribute("src", src.replace(from, to));
+      });
+      // Images with bespoke names (e.g. "Let's talk!") carry per-theme srcs.
+      themedExplicit.forEach((img) => {
+        const src = img.getAttribute(mode === "dark" ? "data-src-dark" : "data-src-light");
+        if (src) img.setAttribute("src", src);
+      });
+    }
+    function apply(mode) {
+      swapImages(mode);
+      if (toggle) {
+        const isDark = mode === "dark";
+        toggle.setAttribute("aria-pressed", String(isDark));
+        toggle.setAttribute("aria-label", isDark ? "Switch to light mode" : "Switch to dark mode");
+      }
+    }
+
+    apply(resolved());
+
+    if (toggle) {
+      toggle.addEventListener("click", () => {
+        const next = resolved() === "dark" ? "light" : "dark";
+        root.setAttribute("data-theme", next);
+        try { localStorage.setItem("theme", next); } catch (e) {}
+        apply(next);
+      });
+    }
+
+    // When the user hasn't made an explicit choice, track the system setting live.
+    darkMedia.addEventListener("change", () => {
+      if (!root.getAttribute("data-theme")) apply(resolved());
+    });
+  })();
+
   /* ---------- Smooth scroll (Lenis) ---------- */
   let lenis = null;
   if (!reduceMotion && window.Lenis) {

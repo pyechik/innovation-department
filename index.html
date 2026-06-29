@@ -4,6 +4,19 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+  <!-- Apply a saved theme choice before first paint (avoids a flash).
+       With no saved choice, CSS prefers-color-scheme drives the default. -->
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem("theme");
+        if (t === "dark" || t === "light") {
+          document.documentElement.setAttribute("data-theme", t);
+        }
+      } catch (e) {}
+    })();
+  </script>
+
   <link rel="icon" type="image/png" href="favicon.png">
   
   <!-- Google tag (gtag.js) -->
@@ -222,7 +235,7 @@
         <span class="reveal-line">Have an idea you’re</span>
         <span class="reveal-line">ready to bring to life?</span>
       </h2>
-      <img class="contact-script reveal-up" src="images/lets-talk.webp" alt="Let’s talk!" width="457" height="125" />
+      <img class="contact-script reveal-up" src="images/lets-talk.webp" alt="Let’s talk!" width="457" height="125" data-src-light="images/lets-talk.webp" data-src-dark="images/lets-talk_white.png" />
       <a class="btn btn-primary btn-block contact-email reveal-up" href="mailto:hello@innovation-department.com">hello@innovation-department.com →</a>
     </section>
   </main>
@@ -232,6 +245,11 @@
     <span>© The Innovation Department</span>
     <span>San Francisco, CA</span>
     <span>2026</span>
+    <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark mode" aria-pressed="false">
+      <span class="theme-toggle-icon" aria-hidden="true">☀</span>
+      <span class="theme-toggle-track"><span class="theme-toggle-thumb"></span></span>
+      <span class="theme-toggle-icon" aria-hidden="true">☾</span>
+    </button>
     <a href="#top" class="to-top">Back to top ↑</a>
   </footer>
 

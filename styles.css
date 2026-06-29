@@ -71,6 +71,37 @@
   --fs-lead:    clamp(1.0625rem, 0.875rem + 0.625vw, 1.5rem);   /*  24 */
   --fs-body:    clamp(0.875rem, 0.714rem + 0.536vw, 1.25rem);   /*  20 */
   --fs-label:   clamp(0.6875rem, 0.607rem + 0.268vw, 0.875rem); /*  14 */
+
+  color-scheme: light;
+}
+
+/* ---------- Dark theme ----------
+   Same warm palette, inverted: a near-black warm ground with cream type.
+   Applied for an explicit choice (data-theme="dark") OR by system
+   preference when the user hasn't overridden it (:not([data-theme="light"])). */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --cream:      #16130E;
+  --cream-deep: #211C15;
+  --ink:        #F4EFE6;
+  --ink-soft:   #C7C0B2;
+  --muted:      #9A9488;
+  --coral:      #FF6A47;
+  --coral-deep: #FF7E5A;
+  --line:       rgba(244, 239, 230, 0.16);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --cream:      #16130E;
+    --cream-deep: #211C15;
+    --ink:        #F4EFE6;
+    --ink-soft:   #C7C0B2;
+    --muted:      #9A9488;
+    --coral:      #FF6A47;
+    --coral-deep: #FF7E5A;
+    --line:       rgba(244, 239, 230, 0.16);
+  }
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -355,7 +386,7 @@ em { font-style: italic; }
 }
 .step ul {
   list-style: none;
-  border-top: 1px solid rgba(28, 26, 23, 0.14);
+  border-top: 1px solid var(--line);
 }
 .step li {
   display: flex;
@@ -364,7 +395,7 @@ em { font-style: italic; }
   color: var(--ink-soft);
   line-height: 1.5;
   padding: 0.6rem 0;
-  border-bottom: 1px solid rgba(28, 26, 23, 0.14);
+  border-bottom: 1px solid var(--line);
 }
 .step li::before {
   content: "◆";
@@ -408,7 +439,9 @@ em { font-style: italic; }
   font-size: clamp(1.25rem, 0.9rem + 1vw, 1.6rem);
   line-height: 1.08;
   letter-spacing: -0.01em;
-  color: var(--cream);
+  /* Always light: the caption sits on a fixed dark scrim over the image,
+     so this must not follow the theme (var(--cream) flips dark in dark mode). */
+  color: #F4EFE6;
 }
 .work-desc { font-size: var(--fs-label); color: rgba(244, 239, 230, 0.82); margin-top: 0.25rem; }
 .work-item--building .work-name { color: var(--coral); }
@@ -482,6 +515,51 @@ em { font-style: italic; }
 }
 .to-top { color: var(--ink); font-weight: 500; transition: color 0.3s; }
 .to-top:hover { color: var(--coral); }
+
+/* ---------- Theme toggle (sliding sun/moon switch) ---------- */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  color: var(--muted);
+  font: inherit;
+  line-height: 1;
+  -webkit-tap-highlight-color: transparent;
+}
+.theme-toggle-icon { font-size: 0.85rem; opacity: 0.7; }
+.theme-toggle-track {
+  position: relative;
+  width: 46px;
+  height: 24px;
+  flex: 0 0 auto;
+  border-radius: 100px;
+  border: 1px solid var(--line);
+  background: var(--cream-deep);
+  transition: border-color 0.3s, background 0.3s;
+}
+.theme-toggle-thumb {
+  position: absolute;
+  top: 50%;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--ink);
+  transform: translateY(-50%);
+  transition: transform 0.35s var(--ease), background 0.3s;
+}
+.theme-toggle:hover { color: var(--ink); }
+.theme-toggle:hover .theme-toggle-track { border-color: var(--coral); }
+.theme-toggle:focus-visible { outline: 2px solid var(--coral); outline-offset: 3px; border-radius: 100px; }
+/* Slide the thumb to the moon when dark mode is active (by choice or by system) */
+:root[data-theme="dark"] .theme-toggle-thumb { transform: translate(22px, -50%); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .theme-toggle-thumb { transform: translate(22px, -50%); }
+}
 
 /* ---------- Reveal base states (JS animates these in) ---------- */
 .reveal-up { opacity: 0; transform: translateY(28px); }
