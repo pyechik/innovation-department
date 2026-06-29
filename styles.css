@@ -564,7 +564,11 @@ em { font-style: italic; }
 /* ---------- Reveal base states (JS animates these in) ---------- */
 .reveal-up { opacity: 0; transform: translateY(28px); }
 .reveal-line { opacity: 0; }
-.js-ready .hero-title .line > span { transform: translateY(110%); }
+/* All hero lines slide up EXCEPT the script line, which is "written" L→R instead */
+.js-ready .hero-title .line:not(.line--write) > span { transform: translateY(110%); }
+/* Script words start clipped from the right; JS sweeps the clip open to reveal
+   them left-to-right, like cursive being written. */
+.js-ready .hero-title .word--write { clip-path: inset(0% 100% 0% 0%); will-change: clip-path; }
 
 /* ---------- Responsive ---------- */
 @media (max-width: 860px) {
@@ -587,4 +591,5 @@ em { font-style: italic; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
   .reveal-up, .reveal-line { opacity: 1 !important; transform: none !important; }
   .js-ready .hero-title .line > span { transform: none !important; }
+  .js-ready .hero-title .word--write { clip-path: none !important; }
 }

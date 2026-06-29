@@ -141,39 +141,39 @@
     update();
   })();
 
-  /* ---------- Hero "sand" cursor trail ----------
-     A pixel-trail effect (grid cells light up as the cursor passes) styled as
-     warm sand grains; an SVG gooey filter melts neighbours into flowing blobs.
+  /* ---------- Hero paint-brush cursor trail ----------
+     A single-color coral stroke that follows the cursor: tightly-spaced dabs
+     laid exactly on the path, melted into one continuous ribbon by the SVG
+     gooey filter, fading in place like wet paint. Slower movement lays a
+     thicker stroke and fast movement tapers thinner (brush pressure).
      Independent of GSAP; skipped for reduced-motion. */
-  (function sandTrail() {
+  (function paintTrail() {
     if (reduceMotion) return;
     const hero = document.querySelector(".hero");
     const trail = hero && hero.querySelector(".sand-trail");
     if (!trail) return;
 
-    const SAND = ["#cdb488", "#c2a06a", "#b8925a", "#d9c8a3", "#ad8850"];
-    const STEP = 8; // px between grains along the path — small = continuous & fluid
+    const STEP = 6; // px between dabs along the path — small = one continuous ribbon
+    const cs = getComputedStyle(document.documentElement);
+    // Use the theme's foreground (--ink): black in light mode, cream-white in dark.
+    function brushColor() { return cs.getPropertyValue("--ink").trim() || "#1C1A17"; }
+    let color = brushColor();
     let lastX = null, lastY = null;
 
-    // One soft grain dropped at (x, y), scattering and settling like disturbed sand.
-    function grain(x, y) {
+    // One soft round dab of paint at (x, y), fading and gently shrinking in place.
+    function dab(x, y, size) {
       const el = document.createElement("span");
       el.className = "sand-cell";
-      const size = 14 + Math.random() * 22;
-      const sx = (Math.random() - 0.5) * 12; // scatter around the finger's path
-      const sy = (Math.random() - 0.5) * 12;
       el.style.cssText =
-        `left:${x + sx - size / 2}px;top:${y + sy - size / 2}px;` +
-        `width:${size}px;height:${size}px;background:${SAND[(Math.random() * SAND.length) | 0]};`;
+        `left:${x - size / 2}px;top:${y - size / 2}px;` +
+        `width:${size}px;height:${size}px;background:${color};`;
       trail.appendChild(el);
-      const dx = (Math.random() - 0.5) * 10;
-      const dy = 4 + Math.random() * 10; // drift down as it settles
       const anim = el.animate(
         [
-          { opacity: 0.85, transform: "translate(0,0) scale(1)" },
-          { opacity: 0, transform: `translate(${dx}px, ${dy}px) scale(0.35)` },
+          { opacity: 0.9, transform: "scale(1)" },
+          { opacity: 0, transform: "scale(0.6)" },
         ],
-        { duration: 1000 + Math.random() * 600, easing: "cubic-bezier(.22,.61,.36,1)", fill: "forwards" }
+        { duration: 1100, easing: "cubic-bezier(.22,.61,.36,1)", fill: "forwards" }
       );
       anim.onfinish = () => el.remove();
     }
@@ -181,11 +181,15 @@
     hero.addEventListener("pointermove", (e) => {
       const r = hero.getBoundingClientRect();
       const x = e.clientX - r.left, y = e.clientY - r.top;
-      if (lastX === null) { lastX = x; lastY = y; grain(x, y); return; }
-      // Lay a continuous run of grains along the exact path travelled this frame.
+      color = brushColor(); // keep the stroke in sync if the theme was toggled
+      if (lastX === null) { lastX = x; lastY = y; dab(x, y, 28); return; }
       const dxp = x - lastX, dyp = y - lastY;
-      const n = Math.min(Math.max(1, Math.round(Math.hypot(dxp, dyp) / STEP)), 60);
-      for (let i = 1; i <= n; i++) grain(lastX + (dxp * i) / n, lastY + (dyp * i) / n);
+      const dist = Math.hypot(dxp, dyp);
+      // Brush pressure: a slow drag lays a fat stroke; a fast flick tapers thin.
+      const size = Math.max(14, 36 - dist * 0.55);
+      // Lay a continuous run of dabs along the exact path travelled this frame.
+      const n = Math.min(Math.max(1, Math.round(dist / STEP)), 60);
+      for (let i = 1; i <= n; i++) dab(lastX + (dxp * i) / n, lastY + (dyp * i) / n, size);
       lastX = x; lastY = y;
     });
     hero.addEventListener("pointerleave", () => { lastX = lastY = null; });
@@ -367,15 +371,22 @@
   if (reduceMotion) return; // CSS already shows everything
 
   /* ---------- Hero intro ---------- */
-  const heroLines = gsap.utils.toArray(".hero-title .line > span");
   const introTl = gsap.timeline({ delay: 0.15 });
   introTl
-    .to(heroLines, {
-      y: "0%",
-      duration: 1.1,
-      ease: "expo.out",
-      stagger: 0.12,
+    // Script line ("distinctive brands"): sweep the clip open left-to-right so
+    // each word appears to be written; "distinctive" first, then "brands".
+    .to(".hero-title .word--write", {
+      clipPath: "inset(0% 0% 0% 0%)",
+      duration: 0.85,
+      ease: "power1.inOut",
+      stagger: 0.5,
     })
+    // Serif line ("for unmissable products"): slide up from its clip box.
+    .to(
+      ".hero-title .line:not(.line--write) > span",
+      { y: "0%", duration: 1.1, ease: "expo.out" },
+      "-=0.45"
+    )
     .to(
       ".hero .reveal-up",
       { y: 0, opacity: 1, duration: 0.9, ease: "power3.out", stagger: 0.12 },
