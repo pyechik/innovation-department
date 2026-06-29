@@ -95,16 +95,15 @@
     const trail = hero && hero.querySelector(".sand-trail");
     if (!trail) return;
 
-    const SAND = ["#000000"]; // Solid black ink
-    const STEP = 2; // px between grains along the path — small = continuous & fluid
+    const SAND = ["#cdb488", "#c2a06a", "#b8925a", "#d9c8a3", "#ad8850"];
+    const STEP = 8; // px between grains along the path — small = continuous & fluid
     let lastX = null, lastY = null;
 
     // One soft grain dropped at (x, y), scattering and settling like disturbed sand.
     function grain(x, y) {
       const el = document.createElement("span");
       el.className = "sand-cell";
-      // A base of 10px, sometimes swelling up to +22px or down to +0px.
-const size = 10 + Math.random() * 22; 
+      const size = 14 + Math.random() * 22;
       const sx = (Math.random() - 0.5) * 12; // scatter around the finger's path
       const sy = (Math.random() - 0.5) * 12;
       el.style.cssText =
@@ -112,8 +111,7 @@ const size = 10 + Math.random() * 22;
         `width:${size}px;height:${size}px;background:${SAND[(Math.random() * SAND.length) | 0]};`;
       trail.appendChild(el);
       const dx = (Math.random() - 0.5) * 10;
-     const dx = (Math.random() - 0.5) * 6; // Less random sideways scatter
-const dy = (Math.random() - 0.5) * 3; // Minimal vertical drift, almost zero
+      const dy = 4 + Math.random() * 10; // drift down as it settles
       const anim = el.animate(
         [
           { opacity: 0.85, transform: "translate(0,0) scale(1)" },
